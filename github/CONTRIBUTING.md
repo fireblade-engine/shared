@@ -14,7 +14,7 @@ Use your best judgment and feel free to propose changes to this document in a pu
 
 This is an open source project and we love to receive contributions from our community — [**you**][ref-contributors]!   
 
-There are many ways to contribute, from writing __tutorials__ or __blog posts__, improving the [__documentation__][ref-documentation], submitting [__bug reports__][ref-issues-new] and [__feature requests__][ref-pull-request-new] or 
+There are many ways to contribute, from writing __tutorials__ or __blog posts__, improving the [__documentation__][ref-documentation], submitting [__bug reports__][ref-issues-new] and [__enhancement__][ref-pull-request-new] or 
 [__writing code__][ref-pull-request-new] which can be incorporated into the repository itself.
 
 When contributing to this project, please feel free to discuss the changes and ideas you wish to contribute with the repository owners before making a change by opening a [new issue][ref-issues-new] and add the **feature request** tag to that issue.
