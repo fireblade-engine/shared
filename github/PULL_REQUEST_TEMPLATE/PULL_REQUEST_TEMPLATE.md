@@ -31,7 +31,8 @@ Have the relevant portions of the guides in the Documentation folder been update
 
 ### Testing
 
-*How is the new feature tested?*
+*How is the new feature tested?
+Please ensure CI is not broken* 
 
 ### Performance
 
@@ -43,8 +44,7 @@ Have the relevant portions of the guides in the Documentation folder been update
 
 ### Checklist
 
-- [ ] I've read the [Contribution Guidelines](/README.md#contributing-to-swift-collections)
-- [ ] My contributions are licensed under the [Swift license](https://swift.org/LICENSE.txt).
+- [ ] I've read the [Contribution Guidelines](https://example.com)
 - [ ] I've followed the coding style of the rest of the project.
 - [ ] I've added tests covering all new code paths my change adds to the project (to the extent possible).
 - [ ] I've added benchmarks covering new functionality (if appropriate).
