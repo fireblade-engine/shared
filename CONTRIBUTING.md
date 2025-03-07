@@ -69,7 +69,7 @@ Don't be intimidated by these responsibilities, they are easy to meet if you tak
 
 - [x] Create issues for any major changes and enhancements that you wish to make. Discuss things transparently and get community feedback.
 - [x] Ensure (cross-)platform compatibility for every change that's accepted. An addition should not reduce the number of platforms that the project supports.
-- [x] Ensure **coding conventions** are met. Lint your code with the project's default tools. Project wide commands are available through the [Makefile][ref-makefile] in the repository root.
+- [x] Ensure **coding conventions** are met. Lint your code with the project's default tools. Project wide commands are available through the Makefile in the repository root.
 - [x] Add tests for your feature that prove it's working as expected. Code coverage should not drop below its previous value.
 - [x] Ensure none of the existing tests are failing after adding your changes.
 - [x] Document your public API code and ensure to add code comments where necessary.
@@ -82,14 +82,13 @@ Please consult the [README][ref-readme] for installation instructions.
 <!-- REFERENCES -->
 
 [ref-code-of-conduct]: https://github.com/fireblade-engine/shared/blob/main/CODE_OF_CONDUCT.md
-[ref-contributors]: https://github.com/fireblade-engine/ecs/graphs/contributors
-[ref-documentation]: https://github.com/fireblade-engine/ecs/wiki
-[ref-gh-actions]: https://github.com/fireblade-engine/ecs/actions
-[ref-issues-first]: https://github.com/fireblade-engine/ecs/issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue"
-[ref-issues-help]: https://github.com/fireblade-engine/ecs/issues?q=is%3Aopen+is%3Aissue+label%3A"help+wanted"
-[ref-issues-new]: https://github.com/fireblade-engine/ecs/issues/new/choose
-[ref-issues]: https://github.com/fireblade-engine/ecs/issues
+[ref-contributors]: https://github.com/fireblade-engine/shared/graphs/contributors
+[ref-documentation]: https://github.com/fireblade-engine/shared/wiki
+[ref-gh-actions]: https://github.com/fireblade-engine/shared/actions
+[ref-issues-first]: https://github.com/fireblade-engine/shared/issues?q=is%3Aopen+is%3Aissue+label%3A"good+first+issue"
+[ref-issues-help]: https://github.com/fireblade-engine/shared/issues?q=is%3Aopen+is%3Aissue+label%3A"help+wanted"
+[ref-issues-new]: https://github.com/fireblade-engine/shared/issues/new/choose
+[ref-issues]: https://github.com/fireblade-engine/shared/issues
 [ref-pull-request-how-to]: https://docs.github.com/en/github/writing-on-github/autolinked-references-and-urls
-[ref-pull-request-new]: https://github.com/fireblade-engine/ecs/compare
+[ref-pull-request-new]: https://github.com/fireblade-engine/shared/compare
 [ref-readme]: https://github.com/fireblade-engine/shared/blob/main/README.md
-[ref-makefile]: https://github.com/fireblade-engine/shared/blob/main/Makefile
