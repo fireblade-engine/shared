@@ -1,12 +1,12 @@
-# Fireblade Meta
+# Fireblade reusable scripts, workflows, templates
 
-[![Check markdown links](https://github.com/fireblade-engine/meta/actions/workflows/markdown-link-check.yml/badge.svg)](https://github.com/fireblade-engine/meta/actions/workflows/markdown-link-check.yml)
+This repository contains reusable workflows to minimize redundant workflows across the organization. 
+This effort will also facilitate the standardization of testing processes while empowering repository code owners to customize their testing plans as needed. 
 
-Meta files for Fireblade e.g. contribution guidelines, issue templates etc.
+Furthermore this repo serves as a template for Fireblade projects.
 
+Insprired by:
 
-### Usage
-
-`make copy-from SRC=/Users/<USER>/<REPO>/<ROOT>`
-
-`make copy-to DEST=/Users/<USER>/<REPO>/<ROOT>`
+- https://github.com/swiftlang/github-workflows
+- https://github.com/trussworks/shared-actions
+- https://github.com/rapidsai/shared-actions

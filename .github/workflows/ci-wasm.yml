@@ -1,0 +1,16 @@
+name: WASM
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  wasm:
+    runs-on: ubuntu-latest
+    container: swift:6.0.3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: swiftwasm/setup-swiftwasm@v2
+      - run: swift build --swift-sdk wasm32-unknown-wasi
