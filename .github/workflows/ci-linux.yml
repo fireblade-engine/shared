@@ -13,7 +13,7 @@ on:
         default: "~/Library/Caches/org.swift.swiftpm"
 
 jobs:
-  spm-linux:
+  Linux-SPM:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
