@@ -8,3 +8,5 @@ Insprired by:
 - https://github.com/swiftlang/github-workflows
 - https://github.com/trussworks/shared-actions
 - https://github.com/rapidsai/shared-actions
+- https://github.com/awslabs/aws-sdk-swift/tree/main/.github/workflows
+- 
