@@ -9,18 +9,18 @@ on:
         required: true
       swift_build_dir:
         type: string
-        description: "Specify a custom build directory path (default .build)"  
+        description: "Specify a custom build directory path (default .build)"
         default: ".build"
       spm_cache_dir:
         type: string
-        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"  
+        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"
         default: "~/Library/Caches/org.swift.swiftpm"
 
 jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
-      matrix: # e.g. 'swift:6.0.3-jammy' -> https://hub.docker.com/_/swift/tags 
+      matrix: # e.g. 'swift:6.0.3-jammy' -> https://hub.docker.com/_/swift/tags
         swift_version: ["6.0.3"]
     container:
       image: swift:${{ matrix.swift_version }}
@@ -30,29 +30,44 @@ jobs:
       - uses: actions/cache@v4
         with:
           path: |
-           ~/Library/Caches/org.swift.swiftpm/artifacts  
-           ~/Library/Caches/org.swift.swiftpm/checkouts
-           ~/Library/Caches/org.swift.swiftpm/repositories
-            
-           .build/artifacts
-           .build/checkouts
-           .build/repositories
-           
-            
-            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
-            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/artifacts
-            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/repositories
+            ~/Library/Caches/org.swift.swiftpm/artifacts  
+            ~/Library/Caches/org.swift.swiftpm/checkouts
+            ~/Library/Caches/org.swift.swiftpm/repositories
              
-            ~/.cache/org.swift.swiftpm
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
 
-            
-            
-            %LOCALAPPDATA%\org.swift.swiftpm\
-            
+             
+             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/artifacts
+             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/repositories
+              
+             ~/.cache/org.swift.swiftpm
+
+             
+             
+             %LOCALAPPDATA%\org.swift.swiftpm\
+
           key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
           # XCODE: key: ${{ runner.os }}-spm-${{ hashFiles('**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
+
+      - name: Build
+        run: |
+          swift build -c debug
+          swift build -c release
+
+      - name: Test
+        run: |
+          swift test -c debug
+          swift test -c release
+
+      - name: Run
+        run: |
+          swift run -c debug shared-actions
+          swift run -c release shared-actions
 
       - name: <Debug>
         run: |
@@ -60,18 +75,3 @@ jobs:
           ls -la .
           ls -la .build
           ls -la ~/.cache/org.swift.swiftpm
-
-      - name: Build
-        run: |
-          swift build -c debug
-          swift build -c release
-      
-      - name: Test
-        run: |
-          swift test -c debug
-          swift test -c release
-        
-      - name: Run
-        run: |
-          swift run -c debug shared-actions
-          swift run -c release shared-actions
