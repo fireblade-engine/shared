@@ -5,7 +5,7 @@ on:
 
 env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-  CODECOV_XCODE_VERSION: "16.0"  # Xcode version used to generate code coverage
+  CODECOV_XCODE_VERSION: "16.0" # Xcode version used to generate code coverage
 
 jobs:
   macos:
@@ -14,27 +14,27 @@ jobs:
       fail-fast: true
       matrix:
         config:
-        - { os: "macos-14", xcode: "15.4" }
-        - { os: "macos-15", xcode: "16.0" }
+          - { os: "macos-14", xcode: "15.4" }
+          - { os: "macos-15", xcode: "16.0" }
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-        ~/Library/Caches/org.swift.swiftpm/artifacts  
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm/artifacts  
             ~/Library/Caches/org.swift.swiftpm/checkouts
             ~/Library/Caches/org.swift.swiftpm/repositories
-            
-
-             
             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/artifacts
             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/repositories
-             
-                     # XCODE: key: ${{ runner.os }}-spm-${{ hashFiles('**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
-
-            
-            
-            %LOCALAPPDATA%\org.swift.swiftpm\
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          # XCODE: key: ${{ runner.os }}-spm-${{ hashFiles('**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
 
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
