@@ -12,5 +12,3 @@ jobs:
   selftest-linux:
     name: Test Linux
     uses: ./.github/workflows/ci-linux.yml
-    with:
-      swift_version: "6.0.3"
