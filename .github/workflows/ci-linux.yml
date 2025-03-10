@@ -59,3 +59,20 @@ jobs:
           ls -la .
           ls -la .build
           ls -la ~/.cache/org.swift.swiftpm
+          exit(-1) # Simulate failure
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ github.job }}-${{ github.run_id }}
+          path: |
+            .build/*.yaml
+            .build/*.xml
+            .build/*.json
+            .build/*.txt
+            .build/**/*.xctest
+            .build/**/*.json
+            .build/**/*.txt
+          if-no-files-found: warn
+          include-hidden-files: true
