@@ -71,8 +71,8 @@ jobs:
             .build/*.xml
             .build/*.json
             .build/*.txt
-            .build/**/*.xctest
-            .build/**/*.json
-            .build/**/*.txt
+            .build/[debug|release]/*.xctest
+            .build/[debug|release]/*.json
+            .build/[debug|release]/*.txt
           if-no-files-found: warn
           include-hidden-files: true
