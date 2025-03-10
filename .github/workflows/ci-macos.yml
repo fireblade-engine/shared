@@ -1,11 +1,7 @@
 name: macOS
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
-  workflow_dispatch:
+  workflow_call:
 
 env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
