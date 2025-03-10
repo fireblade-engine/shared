@@ -1,39 +1,77 @@
 name: Linux
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_call:
+    inputs:
+      swift_version: # TODO: multiple swift version
+        type: string
+        description: "Swift version to use for the build"
+        required: true
+      swift_build_dir:
+        type: string
+        description: "Specify a custom build directory path (default .build)"  
+        default: ".build"
+      spm_cache_dir:
+        type: string
+        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"  
+        default: "~/Library/Caches/org.swift.swiftpm"
 
 jobs:
   linux:
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        swift: ["latest"]
+      matrix: # e.g. 'swift:6.0.3-jammy' -> https://hub.docker.com/_/swift/tags 
+        swift_version: ["6.0.3"]
     container:
-      image: swift:${{ matrix.swift }}
+      image: swift:${{ matrix.swift_version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Test
-        run: swift test -c release --enable-xctest --parallel --xunit-output .build/xUnit-output.xml
-
-      - name: Upload test artifacts
-        if: failure()
-        uses: actions/upload-artifact@v4
+      - uses: actions/cache@v4
         with:
-          name: test-artifacts-linux-${{ matrix.swift }}-${{ github.run_id }}
           path: |
-            .build/*.yaml
-            .build/*.xml
-            .build/*.json
-            .build/*.txt
-            .build/**/*.xctest
-            .build/**/*.json
-            .build/**/*.txt
-          if-no-files-found: warn
-          include-hidden-files: true
+           ~/Library/Caches/org.swift.swiftpm/artifacts  
+           ~/Library/Caches/org.swift.swiftpm/checkouts
+           ~/Library/Caches/org.swift.swiftpm/repositories
+            
+           .build/artifacts
+           .build/checkouts
+           .build/repositories
+           
+            
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/artifacts
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/repositories
+             
+            ~/.cache/org.swift.swiftpm
 
+            
+            
+            %LOCALAPPDATA%\org.swift.swiftpm\
+            
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          # XCODE: key: ${{ runner.os }}-spm-${{ hashFiles('**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: <Debug>
+        run: |
+          swift --version
+          ls -la .
+          ls -la .build
+          ls -la ~/.cache/org.swift.swiftpm
+
+      - name: Build
+        run: |
+          swift build -c debug
+          swift build -c release
+      
+      - name: Test
+        run: |
+          swift test -c debug
+          swift test -c release
+        
+      - name: Run
+        run: |
+          swift run -c debug shared-actions
+          swift run -c release shared-actions

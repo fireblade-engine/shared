@@ -1,0 +1,49 @@
+name: Self test this repository
+
+on:
+    workflow_dispatch:
+    pull_request:
+    push:
+        branches: [ main ]
+    schedule:
+        - cron: '0 0 * * *'
+
+jobs:
+    selftest-linux:
+        strategy:
+            fail-fast: false
+            matrix:
+
+        name: Test Linux
+        uses: ./.github/workflows/ci-linux.yml
+        with:
+            swift_version: "6.0.3"
+        
+    
+    # selftest-macos:
+    #     name: Test macOS
+    #     uses: ./.github/workflows/swift-macos.yml
+
+    # selftest-windows:
+    #     name: Test Windows
+    #     uses: ./.github/workflows/build-swift-windows.yml
+
+
+
+
+# Validate
+# - lint
+# - link-check
+# - readme-check
+# - header
+# Build
+# - cache
+# - build debug
+# - build release
+# Test / Execute
+# - test release
+# - run release
+# Release
+# - artifacts
+# - release
+# - documentation

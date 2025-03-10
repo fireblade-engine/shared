@@ -1,9 +1,7 @@
-# Fireblade reusable scripts, workflows, templates
+# Fireblade reusable actions, workflows, configs
 
 This repository contains reusable workflows to minimize redundant workflows across the organization. 
 This effort will also facilitate the standardization of testing processes while empowering repository code owners to customize their testing plans as needed. 
-
-Furthermore this repo serves as a template for Fireblade projects.
 
 Insprired by:
 
