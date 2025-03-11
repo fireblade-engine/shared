@@ -32,7 +32,12 @@ jobs:
         uses: wasmerio/setup-wasmer@v3
 
       - name: Wasmer version
-        run: wasmer --version
+        run: |
+          set -ex
+          if [ -e /home/runner/.wasmer/wasmer.sh ]; then
+            source /home/runner/.wasmer/wasmer.sh
+          fi
+          wasmer --version
 
       - uses: actions/checkout@v4
 
