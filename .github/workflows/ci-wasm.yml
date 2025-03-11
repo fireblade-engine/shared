@@ -4,10 +4,62 @@ on:
   workflow_call:
 
 jobs:
-  wasm:
+  WASM-SPM:
+    name: SPM Wasm
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    container: swift:6.0.3
+    strategy:
+      fail-fast: false
+      matrix:
+        swift_version: # https://github.com/swiftlang/swift/tags
+          - "6.0.3"
+          - "5.10.1"
+        build_config:
+          - debug
+          - release
+    container:
+      image: swift:${{ matrix.swift_version }}
+
     steps:
+      - name: Setup Swift ${{ matrix.swift_version }}
+        id: setup-swiftwasm
+        uses: swiftwasm/setup-swiftwasm@v2.1
+        with:
+          tag: "swift-${{ matrix.swift_version }}-RELEASE" # https://github.com/swiftlang/swift/tags
+          target: "wasm32-unknown-wasi"
+
       - uses: actions/checkout@v4
-      - uses: swiftwasm/setup-swiftwasm@v2
-      - run: swift build --swift-sdk wasm32-unknown-wasi
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/org.swift.swiftpm
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Build
+        run: |
+          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
+
+      - name: Test
+        run: |
+          swift test -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
+
+      - name: Run
+        run: |
+          swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ matrix.build_config }}-${{ github.run_id }}
+          path: |
+            .build
+          if-no-files-found: warn
+          include-hidden-files: true
