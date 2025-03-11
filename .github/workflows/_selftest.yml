@@ -26,3 +26,7 @@ jobs:
   selftest-windows:
     name: Windows
     uses: ./.github/workflows/ci-windows.yml
+
+  selftest-wasm:
+    name: WASM
+    uses: ./.github/workflows/ci-wasm.yml

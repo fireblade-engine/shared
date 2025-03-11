@@ -26,9 +26,9 @@ jobs:
         build_config:
           - debug
           - release
-
     container:
       image: swift:${{ matrix.swift_version }}
+
     steps:
       - uses: actions/checkout@v4
 

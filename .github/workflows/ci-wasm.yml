@@ -4,10 +4,71 @@ on:
   workflow_call:
 
 jobs:
-  wasm:
+  WASM-SPM:
+    name: SPM Wasm
+    timeout-minutes: 30
     runs-on: ubuntu-latest
-    container: swift:6.0.3
+    strategy:
+      fail-fast: false
+      matrix:
+        swift_version: # https://github.com/swiftwasm/swift-sdk-index/tree/main/v1/builds
+          - "6.0.3-RELEASE"
+        build_config:
+          - debug
+          - release
+
     steps:
       - uses: actions/checkout@v4
-      - uses: swiftwasm/setup-swiftwasm@v2
-      - run: swift build --swift-sdk wasm32-unknown-wasi
+
+      - name: Setup Swift ${{ matrix.swift_version }} WASM SDK
+        id: setup-swiftwasm
+        uses: swiftwasm/setup-swiftwasm@v2
+        with:
+          tag: "swift-${{ matrix.swift_version }}"
+          target: "wasm32-unknown-wasi"
+
+      - name: Setup wasmtime
+        uses: bytecodealliance/actions/wasmtime/setup@v1
+        with:
+          version: "30.0.2"
+
+      - name: Setup Wasm Runtime
+        uses: wasmerio/setup-wasmer@v3
+        with:
+          version: "v5.0.4"
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/org.swift.swiftpm
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Build
+        run: |
+          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+
+      # - name: Test
+      #   run: |
+      #     swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+      #     wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
+
+      - name: Run
+        run: |
+          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
+          wasmtime .build/${{ matrix.build_config }}/shared-actions.wasm
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ matrix.build_config }}-${{ github.run_id }}
+          path: |
+            .build
+          if-no-files-found: warn
+          include-hidden-files: true
