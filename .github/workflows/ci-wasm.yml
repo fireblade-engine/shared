@@ -11,23 +11,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        swift_version: # https://github.com/swiftlang/swift/tags
-          - "6.0.3"
-          - "5.10.1"
         build_config:
           - debug
           - release
     container:
-      image: swift:${{ matrix.swift_version }}
+      image: ghcr.io/swiftwasm/carton:latest
 
     steps:
-      - name: Setup Swift ${{ matrix.swift_version }}
-        id: setup-swiftwasm
-        uses: swiftwasm/setup-swiftwasm@v2
-        with:
-          tag: "swift-${{ matrix.swift_version }}-RELEASE"
-          target: "wasm32-unknown-wasi"
-
       - uses: actions/checkout@v4
 
       - name: Cache SPM dependencies
@@ -44,33 +34,21 @@ jobs:
 
       - name: Build
         run: |
-          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
-
-      - name: Install dependent packages for WebAssembly
-        run: >
-          sudo apt-get update && sudo apt-get install -y
-          wabt binaryen
-
-      - run: npm install && npx playwright install chromium
-
-      - name: Install WebAssembly runtime
-        uses: bytecodealliance/actions/wasmtime/setup@v1
+          swift build -c ${{ matrix.build_config }}
 
       - name: Test
-
         run: |
-          swift build --build-tests --triple wasm32-unknown-wasi -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
-          wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
+          carton test -c ${{ matrix.build_config }}
 
       - name: Run
         run: |
-          swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions
+          swift run -c ${{ matrix.build_config }} shared-actions
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ matrix.build_config }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
             .build
           if-no-files-found: warn
