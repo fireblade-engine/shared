@@ -8,7 +8,7 @@ defaults:
     shell: pwsh
 
 jobs:
-  windows:
+  Windows-SPM:
     runs-on: windows-2019 # Windows SDK lower than 10.0.26100 is needed until https://github.com/swiftlang/swift/pull/79751 released!
     strategy:
       fail-fast: true
