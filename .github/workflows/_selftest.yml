@@ -22,3 +22,7 @@ jobs:
   selftest-macos:
     name: Validate macOS
     uses: ./.github/workflows/ci-macos.yml
+
+  selftest-windows:
+    name: Validate Windows
+    uses: ./.github/workflows/ci-windows.yml
