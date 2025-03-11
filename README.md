@@ -12,5 +12,7 @@ Insprired by:
 - https://github.com/thebrowsercompany/swift-build/blob/main/.github/workflows/swift-toolchain.yml
 - https://github.com/google/flatbuffers/blob/master/.github/workflows/build.yml
 - https://github.com/pointfreeco/swift-dependencies/blob/main/.github/workflows/ci.yml
+- https://github.com/swiftwasm/carton/blob/main/.github/workflows/swift.yml
+
 
 
