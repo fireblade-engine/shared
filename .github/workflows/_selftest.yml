@@ -15,17 +15,17 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  # selftest-linux:
-  #   name: Linux
-  #   uses: ./.github/workflows/ci-linux.yml
+  selftest-linux:
+    name: Linux
+    uses: ./.github/workflows/ci-linux.yml
 
-  # selftest-macos:
-  #   name: macOS
-  #   uses: ./.github/workflows/ci-macos.yml
+  selftest-macos:
+    name: macOS
+    uses: ./.github/workflows/ci-macos.yml
 
-  # selftest-windows:
-  #   name: Windows
-  #   uses: ./.github/workflows/ci-windows.yml
+  selftest-windows:
+    name: Windows
+    uses: ./.github/workflows/ci-windows.yml
 
   selftest-wasm:
     name: WASM

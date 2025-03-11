@@ -13,7 +13,6 @@ jobs:
       matrix:
         swift_version: # https://github.com/swiftwasm/swift-sdk-index/tree/main/v1/builds
           - "6.0.3-RELEASE"
-          - "DEVELOPMENT-SNAPSHOT-2024-05-01-a"
         build_config:
           - debug
           - release
