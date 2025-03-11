@@ -21,6 +21,10 @@ jobs:
         swift_version: # https://hub.docker.com/_/swift/tags
           - "latest"
           - "5.10.1"
+        build_config:
+          - debug
+          - release
+
     container:
       image: swift:${{ matrix.swift_version }}
     steps:
@@ -40,24 +44,21 @@ jobs:
 
       - name: Build
         run: |
-          swift build -c debug
-          swift build -c release
+          swift build -c ${{ matrix.build_config }}
 
       - name: Test
         run: |
-          swift test -c debug
-          swift test -c release
+          swift test -c ${{ matrix.build_config }}
 
       - name: Run
         run: |
-          swift run -c debug shared-actions
-          swift run -c release shared-actions
+          swift run -c ${{ matrix.build_config }} shared-actions
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
             .build
           if-no-files-found: warn

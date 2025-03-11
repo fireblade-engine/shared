@@ -12,6 +12,9 @@ jobs:
         config: # newer versions at top
           - { os: "macos-15", xcode: "16.0" }
           - { os: "macos-14", xcode: "15.4" }
+        build_config:
+          - debug
+          - release
 
     steps:
       - uses: actions/checkout@v4
@@ -34,24 +37,21 @@ jobs:
 
       - name: Build
         run: |
-          swift build -c debug
-          swift build -c release
+          swift build -c ${{ matrix.build_config }}
 
       - name: Test
         run: |
-          swift test -c debug
-          swift test -c release
+          swift test -c ${{ matrix.build_config }}
 
       - name: Run
         run: |
-          swift run -c debug shared-actions
-          swift run -c release shared-actions
+          swift run -c ${{ matrix.build_config }} shared-actions
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
             .build
           if-no-files-found: warn
