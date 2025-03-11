@@ -31,6 +31,19 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            %USERPROFILE%\.swiftpm\cache
+            %TEMP%\org.swift.swiftpm
+            .build\artifacts
+            .build\checkouts
+            .build\repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }}
@@ -42,6 +55,17 @@ jobs:
       - name: Run
         run: |
           swift run -c ${{ matrix.build_config }} shared-actions
+
+      - name: <DEBUG>
+        run: |
+          Write-Host "Contents of .swiftpm:"
+          Get-ChildItem "$env:USERPROFILE\.swiftpm" | ForEach-Object { Write-Host $_.Name }
+
+          Write-Host "`nContents of .swiftpm\cache:"
+          Get-ChildItem "$env:USERPROFILE\.swiftpm\cache" | ForEach-Object { Write-Host $_.Name }
+
+          Write-Host "`nContents of org.swift.swiftpm:"
+          Get-ChildItem "$env:TEMP\org.swift.swiftpm" | ForEach-Object { Write-Host $_.Name }
 
       - name: Upload failure artifacts
         if: failure()
