@@ -23,12 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Swift ${{ matrix.swift_version }}
-        id: setup-swiftwasm
-        uses: swiftwasm/setup-swiftwasm@v2
-        with:
-          tag: "swift-${{ matrix.swift_version }}-RELEASE"
-          target: "wasm32-unknown-wasi"
+  #  - name: Setup Swift ${{ matrix.swift_version }}
+  #    id: setup-swiftwasm
+  #    uses: swiftwasm/setup-swiftwasm@v2
+  #    with:
+  #      tag: "swift-${{ matrix.swift_version }}-RELEASE"
+  #      target: "wasm32-unknown-wasi"
 
       - name: Setup wasmtime
         uses: bytecodealliance/actions/wasmtime/setup@v1
