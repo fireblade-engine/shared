@@ -56,17 +56,6 @@ jobs:
         run: |
           swift run -c ${{ matrix.build_config }} shared-actions
 
-      - name: <DEBUG>
-        run: |
-          Write-Host "Contents of .swiftpm:"
-          Get-ChildItem "$env:USERPROFILE\.swiftpm" | ForEach-Object { Write-Host $_.Name }
-
-          Write-Host "`nContents of .swiftpm\cache:"
-          Get-ChildItem "$env:USERPROFILE\.swiftpm\cache" | ForEach-Object { Write-Host $_.Name }
-
-          Write-Host "`nContents of org.swift.swiftpm:"
-          Get-ChildItem "$env:TEMP\org.swift.swiftpm" | ForEach-Object { Write-Host $_.Name }
-
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
