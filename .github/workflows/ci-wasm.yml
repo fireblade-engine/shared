@@ -21,6 +21,8 @@ jobs:
       image: swift:${{ matrix.swift_version }}
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Setup Swift ${{ matrix.swift_version }}
         id: setup-swiftwasm
         uses: swiftwasm/setup-swiftwasm@v2
@@ -31,17 +33,19 @@ jobs:
       - name: Setup Wasm Runtime
         uses: wasmerio/setup-wasmer@v3
         with:
-          version: "5.0.4"
+          version: "v5.0.4"
 
-      - name: Wasmer version
+      - name: Verify Wasmer is installed
+        shell: pwsh
         run: |
-          set -ex
-          if [ -e /home/runner/.wasmer/wasmer.sh ]; then
-            source /home/runner/.wasmer/wasmer.sh
-          fi
-          ls -la $WASMER_DIR/bin
+          Get-Command wasmer
 
-      - uses: actions/checkout@v4
+       # Verify Wasmer version is correct
+      - name: Verify Wasmer version is correct
+        uses: MeilCli/test-command-action@v3.5.28
+        with:
+          command: wasmer --version
+          expect_contain: "5.0.4"
 
       - name: Cache SPM dependencies
         uses: actions/cache@v4
