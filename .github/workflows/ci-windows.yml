@@ -10,35 +10,43 @@ defaults:
 jobs:
   windows:
     runs-on: windows-2019 # Windows SDK lower than 10.0.26100 is needed until https://github.com/swiftlang/swift/pull/79751 released!
+    strategy:
+      fail-fast: true
+      matrix:
+        swift_version: # https://github.com/swiftlang/swift/tags
+          - "6.0.3"
+          - "5.10.1"
+        build_config:
+          - debug
+          - release
+
     steps:
-
-      - name: Setup VS Dev Environment
-        uses: seanmiddleditch/gha-setup-vsdevenv@v5
-
-      - name: Setup
+      - name: Setup Swift ${{ matrix.swift_version }}
         uses: compnerd/gha-setup-swift@v0.3.0
         with:
-          branch: swift-5.10-release
-          tag: 5.10-RELEASE
+          branch: swift-${{ matrix.swift_version }}-release
+          tag: ${{ matrix.swift_version }}-RELEASE
 
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          swift build -c ${{ matrix.build_config }}
 
       - name: Test
-        run: swift test -c release --parallel --xunit-output .build/xUnit-output.xml
+        run: |
+          swift test -c ${{ matrix.build_config }}
 
-      - name: Upload test artifacts
+      - name: Run
+        run: |
+          swift run -c ${{ matrix.build_config }} shared-actions
+
+      - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts-windows-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
-            .build/*.yaml
-            .build/*.xml
-            .build/*.json
-            .build/*.txt
-            .build/**/*.xctest
-            .build/**/*.json
-            .build/**/*.txt
+            .build
           if-no-files-found: warn
           include-hidden-files: true
