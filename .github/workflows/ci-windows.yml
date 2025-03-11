@@ -1,10 +1,7 @@
 name: Windows
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_call:
 
 defaults:
   run: # Use powershell because bash is not supported: https://github.com/compnerd/gha-setup-swift/issues/18#issuecomment-1705524890

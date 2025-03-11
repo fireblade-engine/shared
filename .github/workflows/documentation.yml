@@ -3,13 +3,7 @@
 name: Documentation
 
 on:
-  release:
-    types:
-      - published
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+  workflow_call:
 
 concurrency:
   group: docs-${{ github.ref }}

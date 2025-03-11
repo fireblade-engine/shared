@@ -1,39 +1,64 @@
 name: Linux
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  workflow_call:
+    inputs:
+      swift_build_dir:
+        type: string
+        description: "Specify a custom build directory path (default .build)"
+        default: ".build"
+      spm_cache_dir:
+        type: string
+        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"
+        default: "~/Library/Caches/org.swift.swiftpm"
 
 jobs:
-  linux:
+  Linux-SPM:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        swift: ["latest"]
+        swift_version: # https://hub.docker.com/_/swift/tags
+          - "latest"
+          - "5.10.1"
     container:
-      image: swift:${{ matrix.swift }}
+      image: swift:${{ matrix.swift_version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/org.swift.swiftpm
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Build
+        run: |
+          swift build -c debug
+          swift build -c release
 
       - name: Test
-        run: swift test -c release --enable-xctest --parallel --xunit-output .build/xUnit-output.xml
+        run: |
+          swift test -c debug
+          swift test -c release
 
-      - name: Upload test artifacts
+      - name: Run
+        run: |
+          swift run -c debug shared-actions
+          swift run -c release shared-actions
+
+      - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-artifacts-linux-${{ matrix.swift }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.swift_version }}-${{ github.run_id }}
           path: |
-            .build/*.yaml
-            .build/*.xml
-            .build/*.json
-            .build/*.txt
-            .build/**/*.xctest
-            .build/**/*.json
-            .build/**/*.txt
+            .build
           if-no-files-found: warn
           include-hidden-files: true
-

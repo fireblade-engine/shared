@@ -1,0 +1,14 @@
+name: Self test shared actions
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  selftest-linux:
+    name: Test Linux
+    uses: ./.github/workflows/ci-linux.yml
