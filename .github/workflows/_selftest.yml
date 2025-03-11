@@ -16,9 +16,13 @@ on:
 
 jobs:
   selftest-linux:
-    name: Validate Linux
+    name: Linux
     uses: ./.github/workflows/ci-linux.yml
 
   selftest-macos:
-    name: Validate macOS
+    name: macOS
     uses: ./.github/workflows/ci-macos.yml
+
+  selftest-windows:
+    name: Windows
+    uses: ./.github/workflows/ci-windows.yml
