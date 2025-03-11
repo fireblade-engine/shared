@@ -28,6 +28,12 @@ jobs:
           tag: "swift-${{ matrix.swift_version }}-RELEASE"
           target: "wasm32-unknown-wasi"
 
+      - name: Setup Wasm Runtime
+        uses: wasmerio/setup-wasmer@v3
+
+      - name: Wasmer version
+        run: wasmer --version
+
       - uses: actions/checkout@v4
 
       - name: Cache SPM dependencies
