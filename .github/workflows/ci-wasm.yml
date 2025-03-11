@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Swift ${{ matrix.swift_version }}
+      - name: Setup Swift ${{ matrix.swift_version }} WASM SDK
         id: setup-swiftwasm
         uses: swiftwasm/setup-swiftwasm@v2
         with:
@@ -53,15 +53,15 @@ jobs:
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
-
-      - name: Run
-        run: |
-          swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions.wasm
-
+      
       - name: Test
         run: |
           swift build --build-tests --triple wasm32-unknown-wasi -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
           wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
+
+      - name: Run
+        run: |
+          swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions
 
       - name: Upload failure artifacts
         if: failure()
