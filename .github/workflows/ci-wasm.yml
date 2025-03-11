@@ -21,30 +21,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-  #  - name: Setup Swift ${{ matrix.swift_version }}
-  #    id: setup-swiftwasm
-  #    uses: swiftwasm/setup-swiftwasm@v2
-  #    with:
-  #      tag: "swift-${{ matrix.swift_version }}-RELEASE"
-  #      target: "wasm32-unknown-wasi"
+      - name: Setup Swift ${{ matrix.swift_version }}
+        id: setup-swiftwasm
+        uses: swiftwasm/setup-swiftwasm@v2
+        with:
+          tag: "swift-${{ matrix.swift_version }}-RELEASE"
+          target: "wasm32-unknown-wasi"
 
       - name: Setup wasmtime
         uses: bytecodealliance/actions/wasmtime/setup@v1
         with:
           version: "30.0.2"
 
-      - name: Wasmtime version
-        run: |
-          wasmtime --version
-
       - name: Setup Wasm Runtime
         uses: wasmerio/setup-wasmer@v3
         with:
           version: "v5.0.4"
-
-      - name: Wasmer version
-        run: |
-          wasmer --version
 
       - name: Cache SPM dependencies
         uses: actions/cache@v4
