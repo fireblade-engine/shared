@@ -1,4 +1,4 @@
-name: Self test shared actions
+name: Self Test Shared Actions
 
 on:
   workflow_dispatch:
@@ -6,9 +6,19 @@ on:
   push:
     branches: [main]
   schedule:
+    #        ┌───────────── minute (0 - 59)
+    #        │ ┌───────────── hour (0 - 23)
+    #        │ │ ┌───────────── day of the month (1 - 31)
+    #        │ │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        * * * * *
     - cron: "0 0 * * *"
 
 jobs:
   selftest-linux:
-    name: Test Linux
+    name: Validate Linux
     uses: ./.github/workflows/ci-linux.yml
+
+  selftest-macos:
+    name: Validate macOS
+    uses: ./.github/workflows/ci-macos.yml

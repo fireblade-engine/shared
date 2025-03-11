@@ -1,6 +1,7 @@
 ._*
 .build/
 .DS_Store
+.vscode/
 build/
 Icon
 xcuserdata
