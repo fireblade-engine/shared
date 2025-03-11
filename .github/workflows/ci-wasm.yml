@@ -39,7 +39,7 @@ jobs:
           if [ -e /home/runner/.wasmer/wasmer.sh ]; then
             source /home/runner/.wasmer/wasmer.sh
           fi
-          $WASMER_DIR/bin/wasmer --version
+          ls -la $WASMER_DIR/bin
 
       - uses: actions/checkout@v4
 
