@@ -46,25 +46,14 @@ jobs:
         run: |
           swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
 
-      - name: Install dependent packages for WebAssembly
-        run: >
-          sudo apt-get update && sudo apt-get install -y
-          wabt binaryen
-
-      - run: npm install && npx playwright install chromium
-
-      - name: Install WebAssembly runtime
-        uses: bytecodealliance/actions/wasmtime/setup@v1
-
-      - name: Test
-
-        run: |
-          swift build --build-tests --triple wasm32-unknown-wasi -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
-          wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
-
       - name: Run
         run: |
           swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions
+
+      - name: Test
+        run: |
+          swift build --build-tests --triple wasm32-unknown-wasi -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}"
+          wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
 
       - name: Upload failure artifacts
         if: failure()
