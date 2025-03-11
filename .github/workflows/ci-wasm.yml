@@ -56,12 +56,12 @@ jobs:
       
       - name: Test
         run: |
-          swift build --build-tests --triple wasm32-unknown-wasi -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+          swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
           wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
 
       - name: Run
         run: |
-          swift run -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib shared-actions
+          swift run -c ${{ matrix.build_config }} --vv --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib shared-actions
 
       - name: Upload failure artifacts
         if: failure()
