@@ -30,6 +30,8 @@ jobs:
 
       - name: Setup Wasm Runtime
         uses: wasmerio/setup-wasmer@v3
+        with:
+          version: "5.0.4"
 
       - name: Wasmer version
         run: |
@@ -37,7 +39,7 @@ jobs:
           if [ -e /home/runner/.wasmer/wasmer.sh ]; then
             source /home/runner/.wasmer/wasmer.sh
           fi
-          wasmer --version
+          $WASMER_DIR/bin/wasmer --version
 
       - uses: actions/checkout@v4
 
