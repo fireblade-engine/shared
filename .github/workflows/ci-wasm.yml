@@ -61,7 +61,8 @@ jobs:
 
       - name: Run
         run: |
-          swift run -c ${{ matrix.build_config }} --vv --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" shared-actions
+          swift build -c ${{ matrix.build_config }} --vv --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
+          wasmtime .build/${{ matrix.build_config }}/shared-actions.wasm
 
       - name: Upload failure artifacts
         if: failure()
