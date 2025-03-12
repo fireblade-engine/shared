@@ -13,12 +13,16 @@ jobs:
         config: # newer versions at top
           - { os: "macos-15", xcode: "16.0" }
           - { os: "macos-14", xcode: "15.4" }
-        target_platform:
-          - { name: "iOS", sdk_prefix: "iphoneos" }
-          - { name: "tvOS", sdk_prefix: "appletvos" }
+        destination:
+          - { platform: "iOS", sdk_prefix: "iphoneos", name: "Any iOS Device" }
+          - {
+              platform: "tvOS",
+              sdk_prefix: "appletvos",
+              name: "Any tvOS Device",
+            }
         build_config:
-          - debug
-          - release
+          - Debug
+          - Release
     steps:
       - uses: actions/checkout@v4
 
@@ -28,46 +32,23 @@ jobs:
           path: |
             ~/Library/Caches/org.swift.swiftpm
             ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
-            .build/artifacts
-            .build/checkouts
-            .build/repositories
-          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved', '**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          key: ${{ runner.os }}-spm-xcode-${{ hashFiles('Package.resolved', '**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
-            ${{ runner.os }}-spm-
+            ${{ runner.os }}-spm-xcode-
 
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
 
-      - name: Find SDKs
+      - name: Build for Any ${{ matrix.destination.name }} Device
         run: |
-          PLATFORM_SDK=$(xcodebuild -showsdks | awk '/${{ matrix.target_platform.sdk_prefix }}/ {print $NF; exit}')
-          echo "PLATFORM_SDK=$PLATFORM_SDK" >> $GITHUB_ENV
-
-      - name: Use SDKs
-        run: |
-          echo "Selected ${{ matrix.target_platform.name }} SDK: $PLATFORM_SDK"
-
-      - name: Show destinations
-        run: |
-          xcodebuild -showdestinations -scheme shared-actions-Package
-
-        # https://stackoverflow.com/a/77180858/6043526
-        # package target: xcodebuild -list | awk '/Schemes:/ {found=1; next} found && /Package$/ {gsub(/^[ \t]+|[ \t]+$/, ""); print; exit}'
-
-      # - name: Build
-      #   run: |
-      #     SDK= xcodebuild -showsdks | awk '/iphonesimulator/ {print $NF; exit}'
-
-      #     xcodebuild build -scheme shared-actions-Package -sdk iphonesimulator16.0 macosx -destination -destination "OS=16.0,name=iPhone 13 Pro"
-
-      #     swift build -c ${{ matrix.build_config }}
+          xcodebuild -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -sdk iphoneos -destination "generic/platform=${{ matrix.destination.name }},name=Any ${{ matrix.destination.name }} Device" build
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.target_platform.name }}-${{ matrix.build_config }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.destination.name }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
-            .build
+            ~/Library/Developer/Xcode/DerivedData/
           if-no-files-found: warn
           include-hidden-files: true
