@@ -14,7 +14,7 @@ jobs:
           - { os: "macos-15", xcode: "16.0" }
           - { os: "macos-14", xcode: "15.4" }
         destination:
-          - { platform: "iOS", sdk_prefix: "iphoneos", name: "Any iOS Device" }
+          - { platform: "iOS", sdk_prefix: "iphoneos" }
           - {
               platform: "tvOS",
               sdk_prefix: "appletvos",
@@ -39,15 +39,15 @@ jobs:
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
 
-      - name: Build for Any ${{ matrix.destination.name }} Device
+      - name: Build for Any ${{ matrix.destination.platform }} Device
         run: |
-          xcodebuild -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -sdk iphoneos -destination "generic/platform=${{ matrix.destination.name }},name=Any ${{ matrix.destination.name }} Device" build
+          xcodebuild -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -sdk iphoneos -destination "generic/platform=${{ matrix.destination.platform }},name=Any ${{ matrix.destination.platform }} Device" build
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.destination.name }}-${{ matrix.build_config }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.destination.platform }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
             ~/Library/Developer/Xcode/DerivedData/
           if-no-files-found: warn
