@@ -5,7 +5,7 @@ on:
 
 jobs:
   ios-SPM:
-    name: SPM ${{ matrix.destination }} ${{ matrix.build_config }}
+    name: SPM ${{ matrix.destination }} Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
