@@ -13,6 +13,9 @@ jobs:
         config: # newer versions at top
           - { os: "macos-15", xcode: "16.0" }
           - { os: "macos-14", xcode: "15.4" }
+        target_platform:
+          - { name: "iOS", sdk_prefix: "iphoneos" }
+          - { name: "tvOS", sdk_prefix: "appletvos" }
         build_config:
           - debug
           - release
@@ -35,14 +38,14 @@ jobs:
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
 
-      - name: Get first iPhone Simulator SDK
+      - name: Find SDKs
         run: |
-          IPHONE_SIMULATOR_SDK=$(xcodebuild -showsdks | awk '/iphonesimulator/ {print $NF; exit}')
-          echo "IPHONE_SIMULATOR_SDK=$IPHONE_SIMULATOR_SDK" >> $GITHUB_ENV
-      
-      - name: Use the SDK variable
+          PLATFORM_SDK=$(xcodebuild -showsdks | awk '/${{ matrix.target_platform.sdk_prefix }}/ {print $NF; exit}')
+          echo "PLATFORM_SDK=$PLATFORM_SDK" >> $GITHUB_ENV
+
+      - name: Use SDKs
         run: |
-          echo "Selected SDK: $IPHONE_SIMULATOR_SDK"
+          echo "Selected ${{ matrix.target_platform.name }} SDK: $PLATFORM_SDK"
 
         # https://stackoverflow.com/a/77180858/6043526
         # package target: xcodebuild -list | awk '/Schemes:/ {found=1; next} found && /Package$/ {gsub(/^[ \t]+|[ \t]+$/, ""); print; exit}'
@@ -59,7 +62,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.build_config }}-${{ github.run_id }}
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.target_platform.name }}-${{ matrix.build_config }}-${{ github.run_id }}
           path: |
             .build
           if-no-files-found: warn
