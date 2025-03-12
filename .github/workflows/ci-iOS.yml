@@ -1,0 +1,66 @@
+name: (i|tv)(Pad)OS
+
+on:
+  workflow_call:
+
+jobs:
+  ios-SPM:
+    name: SPM iOS/iPadOS/tvOS
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        config: # newer versions at top
+          - { os: "macos-15", xcode: "16.0" }
+          - { os: "macos-14", xcode: "15.4" }
+        build_config:
+          - debug
+          - release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+            .build/artifacts
+            .build/checkouts
+            .build/repositories
+          key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved', '**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Select Xcode ${{ matrix.config.xcode }}
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
+
+      - name: Get first iPhone Simulator SDK
+        run: |
+          IPHONE_SIMULATOR_SDK=$(xcodebuild -showsdks | awk '/iphonesimulator/ {print $NF; exit}')
+          echo "IPHONE_SIMULATOR_SDK=$IPHONE_SIMULATOR_SDK" >> $GITHUB_ENV
+      
+      - name: Use the SDK variable
+        run: |
+          echo "Selected SDK: $IPHONE_SIMULATOR_SDK"
+
+        # https://stackoverflow.com/a/77180858/6043526
+        # package target: xcodebuild -list | awk '/Schemes:/ {found=1; next} found && /Package$/ {gsub(/^[ \t]+|[ \t]+$/, ""); print; exit}'
+
+      # - name: Build
+      #   run: |
+      #     SDK= xcodebuild -showsdks | awk '/iphonesimulator/ {print $NF; exit}'
+
+      #     xcodebuild build -scheme shared-actions-Package -sdk iphonesimulator16.0 macosx -destination -destination "OS=16.0,name=iPhone 13 Pro"
+
+      #     swift build -c ${{ matrix.build_config }}
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ matrix.build_config }}-${{ github.run_id }}
+          path: |
+            .build
+          if-no-files-found: warn
+          include-hidden-files: true
