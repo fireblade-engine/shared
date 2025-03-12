@@ -43,12 +43,12 @@ jobs:
 
       - name: Build ${{ matrix.build_config }} for Any ${{ matrix.destination }} Device
         run: |
-          xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ matrix.destination }},OS:latest,name=Any ${{ matrix.destination }} Device"
+          xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ matrix.destination }},OS=latest,name=Any ${{ matrix.destination }} Device"
 
       - name: Test ${{ matrix.build_config }} on ${{ matrix.destination }} Simulator
         run: |
           echo "Running tests on simulator: $SIMULATOR_NAME"
-          xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,OS:latest,name=$SIMULATOR_NAME"
+          xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,OS=latest,name=$SIMULATOR_NAME"
 
       - name: Upload failure artifacts
         if: failure()
