@@ -13,7 +13,7 @@ jobs:
     name: ${{ inputs.target_platform }} Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
     runs-on: ${{ matrix.config.os }}
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         config: # newer versions at top
           - { os: "macos-15", xcode: "16.0" }
