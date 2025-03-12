@@ -8,7 +8,7 @@ jobs:
     name: SPM ${{ matrix.destination }} ${{ matrix.build_config }}
     runs-on: ${{ matrix.config.os }}
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         config: # newer versions at top
           - { os: "macos-15", xcode: "16.0" }
