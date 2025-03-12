@@ -15,6 +15,10 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
+  seltest-validate:
+    name: Validate
+    uses: ./.github/workflows/validate.yml
+
   selftest-linux:
     name: Linux
     uses: ./.github/workflows/ci-linux.yml
@@ -30,3 +34,7 @@ jobs:
   selftest-wasm:
     name: WASM
     uses: ./.github/workflows/ci-wasm.yml
+
+  selftest-ios:
+    name: iOS & tvOS
+    uses: ./.github/workflows/ci-iOS.yml
