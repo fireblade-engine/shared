@@ -1,10 +1,10 @@
-name: macOS
+name: SPM macOS
 
 on:
   workflow_call:
 
 jobs:
-  macos-SPM:
+  SPM-macOS:
     name: SPM macOS
     timeout-minutes: 30
     runs-on: ${{ matrix.config.os }}

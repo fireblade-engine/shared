@@ -1,45 +1,44 @@
-name: Linux
+name: SPM Windows
 
 on:
   workflow_call:
-    inputs:
-      swift_build_dir:
-        type: string
-        description: "Specify a custom build directory path (default .build)"
-        default: ".build"
-      spm_cache_dir:
-        type: string
-        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"
-        default: "~/Library/Caches/org.swift.swiftpm"
+
+defaults:
+  run: # Use powershell because bash is not supported: https://github.com/compnerd/gha-setup-swift/issues/18#issuecomment-1705524890
+    shell: pwsh
 
 jobs:
-  Linux-SPM:
-    name: SPM Linux
+  SPM-Windows:
+    name: SPM Windows
     timeout-minutes: 30
-    runs-on: ubuntu-latest
+    runs-on: windows-2019 # Windows SDK lower than 10.0.26100 is needed until https://github.com/swiftlang/swift/pull/79751 released!
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        swift_version: # https://hub.docker.com/_/swift/tags
-          - "latest"
+        swift_version: # https://github.com/swiftlang/swift/tags
+          - "6.0.3"
           - "5.10.1"
         build_config:
           - debug
           - release
-    container:
-      image: swift:${{ matrix.swift_version }}
 
     steps:
+      - name: Setup Swift ${{ matrix.swift_version }}
+        uses: compnerd/gha-setup-swift@v0.3.0
+        with:
+          branch: swift-${{ matrix.swift_version }}-release
+          tag: ${{ matrix.swift_version }}-RELEASE
+
       - uses: actions/checkout@v4
 
       - name: Cache SPM dependencies
         uses: actions/cache@v4
         with:
-          path: |
-            ~/.cache/org.swift.swiftpm
-            .build/artifacts
-            .build/checkouts
-            .build/repositories
+          path: | # alternative: %TEMP%\org.swift.swiftpm
+            %USERPROFILE%\.swiftpm\cache
+            .build\artifacts
+            .build\checkouts
+            .build\repositories
           key: ${{ runner.os }}-spm-${{ hashFiles('Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-

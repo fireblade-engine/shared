@@ -1,5 +1,4 @@
-name: Self Test Shared Actions
-
+name: Check Workflows
 on:
   workflow_dispatch:
   pull_request:
@@ -15,26 +14,34 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  seltest-validate:
+  check-validate:
     name: Validate
     uses: ./.github/workflows/validate.yml
 
-  selftest-linux:
+  check-linux:
     name: Linux
-    uses: ./.github/workflows/ci-linux.yml
+    uses: ./.github/workflows/spm-linux.yml
 
-  selftest-macos:
+  check-macos:
     name: macOS
-    uses: ./.github/workflows/ci-macos.yml
+    uses: ./.github/workflows/spm-macos.yml
 
-  selftest-windows:
+  check-windows:
     name: Windows
-    uses: ./.github/workflows/ci-windows.yml
+    uses: ./.github/workflows/spm-windows.yml
 
-  selftest-wasm:
-    name: WASM
-    uses: ./.github/workflows/ci-wasm.yml
+  check-wasm:
+    name: Wasm
+    uses: ./.github/workflows/spm-wasm.yml
 
-  selftest-ios:
-    name: iOS & tvOS
-    uses: ./.github/workflows/ci-iOS.yml
+  check-ios:
+    name: iOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: iOS
+
+  check-tvOS:
+    name: tvOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: tvOS

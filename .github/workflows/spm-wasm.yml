@@ -1,10 +1,10 @@
-name: WASM
+name: SPM Wasm
 
 on:
   workflow_call:
 
 jobs:
-  WASM-SPM:
+  SPM-Wasm:
     name: SPM Wasm
     timeout-minutes: 30
     runs-on: ubuntu-latest
