@@ -15,26 +15,26 @@ on:
     - cron: "0 0 * * *"
 
 jobs:
-  # seltest-validate:
-  #   name: Validate
-  #   uses: ./.github/workflows/validate.yml
+  seltest-validate:
+    name: Validate
+    uses: ./.github/workflows/validate.yml
 
-  # selftest-linux:
-  #   name: Linux
-  #   uses: ./.github/workflows/ci-linux.yml
+  selftest-linux:
+    name: Linux
+    uses: ./.github/workflows/ci-linux.yml
 
-  # selftest-macos:
-  #   name: macOS
-  #   uses: ./.github/workflows/ci-macos.yml
+  selftest-macos:
+    name: macOS
+    uses: ./.github/workflows/ci-macos.yml
 
-  # selftest-windows:
-  #   name: Windows
-  #   uses: ./.github/workflows/ci-windows.yml
+  selftest-windows:
+    name: Windows
+    uses: ./.github/workflows/ci-windows.yml
 
-  # selftest-wasm:
-  #   name: WASM
-  #   uses: ./.github/workflows/ci-wasm.yml
+  selftest-wasm:
+    name: WASM
+    uses: ./.github/workflows/ci-wasm.yml
 
   selftest-ios:
-    name: iOS
+    name: iOS & tvOS
     uses: ./.github/workflows/ci-iOS.yml
