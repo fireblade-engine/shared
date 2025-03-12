@@ -47,6 +47,10 @@ jobs:
         run: |
           echo "Selected ${{ matrix.target_platform.name }} SDK: $PLATFORM_SDK"
 
+      - name: Show destinations
+        run: |
+          xcodebuild -showdestinations -scheme shared-actions-Package
+
         # https://stackoverflow.com/a/77180858/6043526
         # package target: xcodebuild -list | awk '/Schemes:/ {found=1; next} found && /Package$/ {gsub(/^[ \t]+|[ \t]+$/, ""); print; exit}'
 
