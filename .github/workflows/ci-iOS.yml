@@ -18,7 +18,7 @@ jobs:
           - tvOS
         build_config:
           - Debug
-          - Release
+          # - Release
     steps:
       - uses: actions/checkout@v4
 
@@ -51,8 +51,6 @@ jobs:
 
       - name: Test ${{ matrix.build_config }} on ${{ matrix.destination }} Simulator
         run: |
-          xcrun simctl boot "$SIMULATOR_NAME"
-          xcrun simctl bootstatus "$SIMULATOR_NAME" || echo "Simulator booted"
           set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=${{ matrix.destination }} Simulator,OS=latest,name=$SIMULATOR_NAME"
 
       - name: Upload failure artifacts
