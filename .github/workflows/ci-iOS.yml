@@ -41,11 +41,11 @@ jobs:
           echo "Found simulator: $SIMULATOR_NAME"
           echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
-      - name: Build for Any ${{ matrix.destination }} Device
+      - name: Build ${{ matrix.build_config }} for Any ${{ matrix.destination }} Device
         run: |
           xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ matrix.destination }},name=Any ${{ matrix.destination }} Device"
 
-      - name: Test on $SIMULATOR_NAME Simulator
+      - name: Test ${{ matrix.build_config }} on ${{ matrix.destination }} Simulator
         run: |
           echo "Running tests on simulator: $SIMULATOR_NAME"
           xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,name=$SIMULATOR_NAME"
