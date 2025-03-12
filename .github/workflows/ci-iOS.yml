@@ -18,7 +18,7 @@ jobs:
           - tvOS
         build_config:
           - Debug
-          # - Release
+          - Release
     steps:
       - uses: actions/checkout@v4
 

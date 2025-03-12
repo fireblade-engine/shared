@@ -3,7 +3,11 @@ import Testing
 #else
 import XCTest
 #endif
+#if DEBUG
 @testable import SharedActions
+#else 
+import SharedActions
+#endif
 
 #if canImport(Testing)
 @Test func testSharedActions() async throws {
