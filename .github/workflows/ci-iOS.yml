@@ -48,7 +48,8 @@ jobs:
       - name: Test ${{ matrix.build_config }} on ${{ matrix.destination }} Simulator
         run: |
           echo "Running tests on simulator: $SIMULATOR_NAME"
-          xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,OS=latest,name=$SIMULATOR_NAME"
+          xcodebuild build-for-testing -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,OS=latest,name=$SIMULATOR_NAME"
+          xcodebuild test-without-building -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,OS=latest,name=$SIMULATOR_NAME"
 
       - name: Upload failure artifacts
         if: failure()
