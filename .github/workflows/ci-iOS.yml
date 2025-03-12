@@ -5,7 +5,7 @@ on:
 
 jobs:
   ios-SPM:
-    name: SPM ${{ matrix.destination.platform }}
+    name: SPM ${{ matrix.destination }}
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: true
