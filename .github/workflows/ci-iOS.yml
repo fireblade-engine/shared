@@ -37,9 +37,9 @@ jobs:
 
       - name: Find Simulator
         run: |
-            SIMULATOR_NAME=$(xcodebuild -showdestinations -scheme "shared-actions-Package" | perl -nle 'if (m/${{ matrix.destination }}\sSimulator.*name\:([^\}]+)\s\}\.*/g && $1 !~ /^Any/ && $1 !~ /SE/) { print $1; }' | sort -r | sort -r | head -n 1 | xargs -I {})
-            echo "Found simulator: $SIMULATOR_NAME"
-            echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
+          SIMULATOR_NAME=$(xcodebuild -showdestinations -scheme "shared-actions-Package" | perl -nle 'if (m/${{ matrix.destination }}\sSimulator.*name\:([^\}]+)\s\}\.*/g && $1 !~ /^Any/ && $1 !~ /SE/) { print $1; }' | sort -r | head -n 1)
+          echo "Found simulator: $SIMULATOR_NAME"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
 
       - name: Build for Any ${{ matrix.destination }} Device
         run: |
@@ -47,7 +47,8 @@ jobs:
 
       - name: Test on $SIMULATOR_NAME Simulator
         run: |
-          xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }}-destination "platform=iOS Simulator,name=$SIMULATOR_NAME"
+          echo "Running tests on simulator: $SIMULATOR_NAME"
+          xcodebuild test -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=iOS Simulator,name=$SIMULATOR_NAME"
 
       - name: Upload failure artifacts
         if: failure()
