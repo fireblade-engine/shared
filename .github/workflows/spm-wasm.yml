@@ -60,7 +60,7 @@ jobs:
 
       - name: Test
         run: |
-          swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --sdk /home/runner/.config/swiftpm/swift-sdks/swift-wasm-6.0.3-RELEASE-wasm32-unknown-wasi.artifactbundle/${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}/wasm32-unknown-wasi/WASI.sdk --static-swift-stdlib
+          swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --sdk /home/runner/.config/swiftpm/swift-sdks/swift-wasm-${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}.artifactbundle/${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}/wasm32-unknown-wasi/WASI.sdk
           wasmtime --dir . .build/${{ matrix.build_config }}/SharedActionsTests.wasm
 
       - name: Run
