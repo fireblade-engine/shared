@@ -2,6 +2,11 @@ name: SPM Wasm
 
 on:
   workflow_call:
+    inputs:
+      test_target_name:
+        description: "Test target name"
+        required: true
+        type: string
 
 env:
   RUN_TESTS: true
@@ -71,7 +76,7 @@ jobs:
         if: env.RUN_TESTS == 'true'
         run: |
           swift build -c ${{ matrix.build_config }} --build-tests -Xswiftc -enable-testing --experimental-swift-sdk ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} --static-swift-stdlib
-          wasmtime --dir . .build/${{ matrix.build_config }}/shared-actionsPackageTests.wasm
+          wasmtime --dir . .build/${{ matrix.build_config }}/${{ inputs.test_target_name }}.wasm
 
       - name: Upload failure artifacts
         if: failure()

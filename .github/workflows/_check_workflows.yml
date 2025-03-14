@@ -38,15 +38,19 @@ jobs:
   check-wasm:
     name: Wasm
     uses: ./.github/workflows/spm-wasm.yml
+    with:
+      test_target_name: shared-actionsPackageTests
 
   check-ios:
     name: iOS
     uses: ./.github/workflows/xcodebuild.yml
     with:
       target_platform: iOS
+      scheme: shared-actions-Package
 
   check-tvOS:
     name: tvOS
     uses: ./.github/workflows/xcodebuild.yml
     with:
       target_platform: tvOS
+      scheme: shared-actions-Package

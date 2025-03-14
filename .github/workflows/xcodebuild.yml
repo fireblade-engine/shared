@@ -7,7 +7,10 @@ on:
         description: "Target platform - can be iOS, tvOS"
         required: true
         type: string
-
+      scheme: 
+        description: "Scheme to build and test"
+        required: true
+        type: string
 env:
   RUN_TESTS: true
 
@@ -47,11 +50,11 @@ jobs:
           echo "Package has tests: $HAS_TESTS"
           echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
 
-      - name: Build ${{ matrix.build_config }} for Any ${{ inputs.target_platform }} Device
+      - name: Build ${{ inputs.scheme }} [${{ matrix.build_config }}] for Any ${{ inputs.target_platform }} Device
         run: |
-          xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ inputs.target_platform }},name=Any ${{ inputs.target_platform }} Device"
+          xcodebuild build -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ inputs.target_platform }},name=Any ${{ inputs.target_platform }} Device"
 
-      - name: Find Simulator
+      - name: Find ${{ inputs.target_platform }} Simulator
         run: |
           SIM=$(xcrun simctl list devices '${{ inputs.target_platform }}' -j | jq -rc '[ .[] | .[] | .[] | select( .isAvailable == true ) ] | first')
           SIMULATOR_NAME=$(echo $SIM | jq -r '.name')
@@ -65,15 +68,15 @@ jobs:
           echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
           echo "SIMULATOR_UDID=$SIMULATOR_UDID" >> $GITHUB_ENV
 
-      - name: Build ${{ matrix.build_config }} for testing on ${{ inputs.target_platform }} Simulator
+      - name: Build ${{ inputs.scheme }} [${{ matrix.build_config }}] for testing on ${{ inputs.target_platform }} Simulator
         run:
           | # https://developer.apple.com/documentation/xcode/build-settings-reference#Enable-Testability
-          xcodebuild build-for-testing -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID" ENABLE_TESTABILITY=YES
+          xcodebuild build-for-testing -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID" ENABLE_TESTABILITY=YES
 
-      - name: Test ${{ matrix.build_config }} on ${{ inputs.target_platform }} Simulator
+      - name: Test ${{ inputs.scheme }} [${{ matrix.build_config }}] on ${{ inputs.target_platform }} Simulator
         if: env.RUN_TESTS == 'true'
         run: |
-          set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID"
+          set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID"
 
       - name: Upload failure artifacts
         if: failure()
