@@ -54,18 +54,18 @@ jobs:
           swift sdk list
           swift sdk configure --show-configuration ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} wasm32-unknown-wasi
 
-      # - name: Build
-      #   run: |
-      #     swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+      - name: Build
+        run: |
+          swift build -c ${{ matrix.build_config }} --experimental-swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
 
       - name: Test
         run: |
-          swift build -c ${{ matrix.build_config }} --vv --build-tests --static-swift-stdlib --experimental-swift-sdk ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} --sdk /home/runner/.config/swiftpm/swift-sdks/swift-wasm-${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}.artifactbundle/${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}/wasm32-unknown-wasi/WASI.sdk
+          swift build -c ${{ matrix.build_config }} --build-tests --experimental-swift-sdk ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} --static-swift-stdlib
           wasmtime --dir . .build/${{ matrix.build_config }}/shared-actionsPackageTests.wasm
 
       - name: Run
         run: |
-          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
+          swift build -c ${{ matrix.build_config }} --experimental-swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
           wasmtime .build/${{ matrix.build_config }}/shared-actions.wasm
 
       - name: Upload failure artifacts
