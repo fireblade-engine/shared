@@ -14,7 +14,7 @@ on:
 
 jobs:
   SPM-Linux:
-    name: SPM Linux Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
+    name: Linux Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
     timeout-minutes: 30
     runs-on: ubuntu-latest
     strategy:

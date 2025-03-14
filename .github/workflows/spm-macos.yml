@@ -5,7 +5,7 @@ on:
 
 jobs:
   SPM-macOS:
-    name: SPM macOS Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
+    name: macOS Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
     timeout-minutes: 30
     runs-on: ${{ matrix.config.os }}
     strategy:
