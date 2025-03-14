@@ -48,6 +48,7 @@ jobs:
           SIMULATOR_UDID=$(echo $SIM | jq -r '.udid')
           if [ "$SIMULATOR_UDID" == "" ] || [ "$SIMULATOR_UDID" == "null" ]; then
             echo "No available simulator found for ${{ inputs.target_platform }}"
+            xcrun simctl list devices
             exit 99
           fi
           echo "Found simulator: $SIMULATOR_NAME $SIMULATOR_UDID"
