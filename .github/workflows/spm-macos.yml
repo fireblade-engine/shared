@@ -3,6 +3,9 @@ name: SPM macOS
 on:
   workflow_call:
 
+env:
+  RUN_TESTS: true
+
 jobs:
   SPM-macOS:
     name: macOS Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
@@ -37,11 +40,19 @@ jobs:
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
 
+      - name: Prepare
+        run: |
+          TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
+          HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
+          echo "Package has tests: $HAS_TESTS"
+          echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
+
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }}
 
       - name: Test
+        if: env.RUN_TESTS == 'true'
         run: |
           swift test -c ${{ matrix.build_config }}
 
