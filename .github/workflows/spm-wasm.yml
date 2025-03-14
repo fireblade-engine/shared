@@ -49,6 +49,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Verify SDK
+        run: |
+          swift sdk list
+          swift sdk configure ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} --show-configuration
+
       # - name: Build
       #   run: |
       #     swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
