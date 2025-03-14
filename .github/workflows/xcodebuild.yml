@@ -37,18 +37,22 @@ jobs:
       - name: Select Xcode ${{ matrix.config.xcode }}
         run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
 
+      - name: Build ${{ matrix.build_config }} for Any ${{ inputs.target_platform }} Device
+        run: |
+          xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ inputs.target_platform }},name=Any ${{ inputs.target_platform }} Device"
+
       - name: Find Simulator
         run: |
           SIM=$(xcrun simctl list devices '${{ inputs.target_platform }}' -j | jq -rc '[ .[] | .[] | .[] | select( .isAvailable == true ) ] | first')
           SIMULATOR_NAME=$(echo $SIM | jq -r '.name')
           SIMULATOR_UDID=$(echo $SIM | jq -r '.udid')
+          if [ "$SIMULATOR_UDID" == "" ] || [ "$SIMULATOR_UDID" == "null" ]; then
+            echo "No available simulator found for ${{ inputs.target_platform }}"
+            exit 99
+          fi
           echo "Found simulator: $SIMULATOR_NAME $SIMULATOR_UDID"
           echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
           echo "SIMULATOR_UDID=$SIMULATOR_UDID" >> $GITHUB_ENV
-
-      - name: Build ${{ matrix.build_config }} for Any ${{ inputs.target_platform }} Device
-        run: |
-          xcodebuild build -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ inputs.target_platform }},name=Any ${{ inputs.target_platform }} Device"
 
       - name: Build ${{ matrix.build_config }} for testing on ${{ inputs.target_platform }} Simulator
         run: | # https://developer.apple.com/documentation/xcode/build-settings-reference#Enable-Testability
