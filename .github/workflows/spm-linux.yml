@@ -40,6 +40,9 @@ jobs:
 
       - name: Prepare
         run: |
+          apt update && apt upgrade
+          apt install jq -y
+          jq --version
           TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
           HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
           echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
