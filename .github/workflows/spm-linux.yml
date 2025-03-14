@@ -38,10 +38,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Cache APT
+        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
+        with:
+            packages: jq
+            version: 1.7.1
+
       - name: Prepare
         run: |
           if [ ! -x "$(command -v jq)" ]; then
-            apt install jq -y
+            apt update -qy
+            apt install jq -qy
           fi
           TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
           HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
