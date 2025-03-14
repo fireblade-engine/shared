@@ -2,26 +2,20 @@ name: Linux
 
 on:
   workflow_call:
-    inputs:
-      swift_build_dir:
-        type: string
-        description: "Specify a custom build directory path (default .build)"
-        default: ".build"
-      spm_cache_dir:
-        type: string
-        description: "Specify a custom SPM cache directory path (default ~/Library/Caches/org.swift.swiftpm)"
-        default: "~/Library/Caches/org.swift.swiftpm"
+
+env:
+  RUN_TESTS: true
 
 jobs:
-  Linux-SPM:
-    name: SPM Linux
+  SPM-Linux:
+    name: Linux Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
     timeout-minutes: 30
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         swift_version: # https://hub.docker.com/_/swift/tags
-          - "latest"
+          - "6.0.3"
           - "5.10.1"
         build_config:
           - debug
@@ -44,17 +38,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Prepare
+        run: |
+          if [ ! -x "$(command -v jq)" ]; then
+            apt update -qy
+            apt install jq -qy
+          fi
+          TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
+          HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
+          echo "Package has tests: $HAS_TESTS"
+          echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
+
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }}
 
       - name: Test
+        if: env.RUN_TESTS == 'true'
         run: |
           swift test -c ${{ matrix.build_config }}
-
-      - name: Run
-        run: |
-          swift run -c ${{ matrix.build_config }} shared-actions
 
       - name: Upload failure artifacts
         if: failure()

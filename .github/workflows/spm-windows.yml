@@ -1,4 +1,4 @@
-name: Windows
+name: SPM Windows
 
 on:
   workflow_call:
@@ -7,9 +7,12 @@ defaults:
   run: # Use powershell because bash is not supported: https://github.com/compnerd/gha-setup-swift/issues/18#issuecomment-1705524890
     shell: pwsh
 
+env:
+  RUN_TESTS: true
+
 jobs:
-  Windows-SPM:
-    name: SPM Windows
+  SPM-Windows:
+    name: Windows Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
     timeout-minutes: 30
     runs-on: windows-2019 # Windows SDK lower than 10.0.26100 is needed until https://github.com/swiftlang/swift/pull/79751 released!
     strategy:
@@ -43,17 +46,25 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Prepare
+        run: |
+          if (-not (Get-Command jq -ErrorAction SilentlyContinue)) {
+              Write-Host "jq not found. Installing..."
+              winget install --id=Jq.Jq -e
+          }
+          $targetTypes = swift package describe --type json | jq '.targets[].type'
+          $hasTests = if ($targetTypes -match "test") { $true } else { $false }
+          Write-Host "Package has tests: $hasTests"
+          Add-Content -Path $env:GITHUB_ENV -Value "RUN_TESTS=$hasTests"
+
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }}
 
       - name: Test
+        if: env.RUN_TESTS == 'true'
         run: |
           swift test -c ${{ matrix.build_config }}
-
-      - name: Run
-        run: |
-          swift run -c ${{ matrix.build_config }} shared-actions
 
       - name: Upload failure artifacts
         if: failure()

@@ -1,0 +1,56 @@
+name: Check Workflows
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    #        ┌───────────── minute (0 - 59)
+    #        │ ┌───────────── hour (0 - 23)
+    #        │ │ ┌───────────── day of the month (1 - 31)
+    #        │ │ │ ┌───────────── month (1 - 12 or JAN-DEC)
+    #        │ │ │ │ ┌───────────── day of the week (0 - 6 or SUN-SAT)
+    #        * * * * *
+    - cron: "0 0 * * *"
+
+# https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/control-the-concurrency-of-workflows-and-jobs#example-only-cancel-in-progress-jobs-or-runs-for-the-current-workflow
+# concurrency: # cancel a currently running workflow from the same PR, branch or tag
+#   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+#   cancel-in-progress: true
+
+jobs:
+  check-validate:
+    name: Validate
+    uses: ./.github/workflows/validate.yml
+
+  check-linux:
+    name: Linux
+    uses: ./.github/workflows/spm-linux.yml
+
+  check-macos:
+    name: macOS
+    uses: ./.github/workflows/spm-macos.yml
+
+  check-windows:
+    name: Windows
+    uses: ./.github/workflows/spm-windows.yml
+
+  check-wasm:
+    name: Wasm
+    uses: ./.github/workflows/spm-wasm.yml
+    with:
+      test_target_name: shared-actionsPackageTests
+
+  check-ios:
+    name: iOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: iOS
+      scheme: shared-actions-Package
+
+  check-tvOS:
+    name: tvOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: tvOS
+      scheme: shared-actions-Package

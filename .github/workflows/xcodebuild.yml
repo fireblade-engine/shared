@@ -1,0 +1,89 @@
+name: Xcode
+
+on:
+  workflow_call:
+    inputs:
+      target_platform:
+        description: "Target platform - can be iOS, tvOS"
+        required: true
+        type: string
+      scheme: 
+        description: "Scheme to build and test"
+        required: true
+        type: string
+env:
+  RUN_TESTS: true
+
+jobs:
+  xcodebuild:
+    name: ${{ inputs.target_platform }} Xcode ${{ matrix.config.xcode }} [${{ matrix.build_config }}]
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        config: # newer versions at top
+          - { os: "macos-15", xcode: "16.0" }
+          - { os: "macos-14", xcode: "15.4" }
+        build_config:
+          - Debug
+          - Release
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache SPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: ${{ runner.os }}-spm-xcode-${{ hashFiles('Package.resolved', '**/*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-xcode-
+
+      - name: Select Xcode ${{ matrix.config.xcode }}
+        run: sudo xcode-select -s /Applications/Xcode_${{ matrix.config.xcode }}.app
+
+      - name: Prepare
+        run: |
+          TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
+          HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
+          echo "Package has tests: $HAS_TESTS"
+          echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
+
+      - name: Build ${{ inputs.scheme }} [${{ matrix.build_config }}] for Any ${{ inputs.target_platform }} Device
+        run: |
+          xcodebuild build -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "generic/platform=${{ inputs.target_platform }},name=Any ${{ inputs.target_platform }} Device"
+
+      - name: Find ${{ inputs.target_platform }} Simulator
+        run: |
+          SIM=$(xcrun simctl list devices '${{ inputs.target_platform }}' -j | jq -rc '[ .[] | .[] | .[] | select( .isAvailable == true ) ] | first')
+          SIMULATOR_NAME=$(echo $SIM | jq -r '.name')
+          SIMULATOR_UDID=$(echo $SIM | jq -r '.udid')
+          if [ "$SIMULATOR_UDID" == "" ] || [ "$SIMULATOR_UDID" == "null" ]; then
+            echo "No available simulator found for ${{ inputs.target_platform }}"
+            xcrun simctl list devices
+            exit 99
+          fi
+          echo "Found simulator: $SIMULATOR_NAME $SIMULATOR_UDID"
+          echo "SIMULATOR_NAME=$SIMULATOR_NAME" >> $GITHUB_ENV
+          echo "SIMULATOR_UDID=$SIMULATOR_UDID" >> $GITHUB_ENV
+
+      - name: Build ${{ inputs.scheme }} [${{ matrix.build_config }}] for testing on ${{ inputs.target_platform }} Simulator
+        run:
+          | # https://developer.apple.com/documentation/xcode/build-settings-reference#Enable-Testability
+          xcodebuild build-for-testing -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID" ENABLE_TESTABILITY=YES
+
+      - name: Test ${{ inputs.scheme }} [${{ matrix.build_config }}] on ${{ inputs.target_platform }} Simulator
+        if: env.RUN_TESTS == 'true'
+        run: |
+          set -o pipefail && env NSUnbufferedIO=YES xcodebuild test-without-building -scheme "${{ inputs.scheme }}" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID"
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ runner.os }}-${{ github.job }}-swift_${{ matrix.config.xcode }}-${{ inputs.target_platform }}-${{ matrix.build_config }}-${{ github.run_id }}
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/
+          if-no-files-found: warn
+          include-hidden-files: true
