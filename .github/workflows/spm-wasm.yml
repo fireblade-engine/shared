@@ -53,10 +53,10 @@ jobs:
         run: |
           swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
 
-      # - name: Test
-      #   run: |
-      #     swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
-      #     wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
+      - name: Test
+        run: |
+          swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+          wasmtime .build/${{ matrix.build_config }}/SharedActionsTests.wasm
 
       - name: Run
         run: |

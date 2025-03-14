@@ -19,34 +19,34 @@ on:
 #   cancel-in-progress: true
 
 jobs:
-  # check-validate:
-  #   name: Validate
-  #   uses: ./.github/workflows/validate.yml
+  check-validate:
+    name: Validate
+    uses: ./.github/workflows/validate.yml
 
   check-linux:
     name: Linux
     uses: ./.github/workflows/spm-linux.yml
 
-  # check-macos:
-  #   name: macOS
-  #   uses: ./.github/workflows/spm-macos.yml
+  check-macos:
+    name: macOS
+    uses: ./.github/workflows/spm-macos.yml
 
-  # check-windows:
-  #   name: Windows
-  #   uses: ./.github/workflows/spm-windows.yml
+  check-windows:
+    name: Windows
+    uses: ./.github/workflows/spm-windows.yml
 
-  # check-wasm:
-  #   name: Wasm
-  #   uses: ./.github/workflows/spm-wasm.yml
+  check-wasm:
+    name: Wasm
+    uses: ./.github/workflows/spm-wasm.yml
 
-  # check-ios:
-  #   name: iOS
-  #   uses: ./.github/workflows/xcodebuild.yml
-  #   with:
-  #     target_platform: iOS
+  check-ios:
+    name: iOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: iOS
 
-  # check-tvOS:
-  #   name: tvOS
-  #   uses: ./.github/workflows/xcodebuild.yml
-  #   with:
-  #     target_platform: tvOS
+  check-tvOS:
+    name: tvOS
+    uses: ./.github/workflows/xcodebuild.yml
+    with:
+      target_platform: tvOS
