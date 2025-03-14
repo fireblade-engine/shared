@@ -19,7 +19,7 @@ on:
 #   cancel-in-progress: true
 
 jobs:
-  check-validate:
+  # check-validate:
   #   name: Validate
   #   uses: ./.github/workflows/validate.yml
 
