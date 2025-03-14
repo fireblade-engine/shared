@@ -40,11 +40,13 @@ jobs:
 
       - name: Prepare
         run: |
-          apt update
-          apt install jq -y
-          jq --version
+          if [ ! -x "$(command -v jq)" ]; then
+            apt update
+            apt install jq -y
+          fi
           TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
           HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
+          echo "Package has tests: $HAS_TESTS"
           echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
 
       - name: Build
@@ -52,7 +54,7 @@ jobs:
           swift build -c ${{ matrix.build_config }}
 
       - name: Test
-        if: env.RUN_TESTS == true
+        if: env.RUN_TESTS == 'true'
         run: |
           swift test -c ${{ matrix.build_config }}
 
