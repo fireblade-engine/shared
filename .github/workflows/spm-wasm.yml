@@ -3,6 +3,9 @@ name: SPM Wasm
 on:
   workflow_call:
 
+env:
+  RUN_TESTS: true
+
 jobs:
   SPM-Wasm:
     name: Wasm Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
@@ -49,11 +52,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
+      - name: Prepare
+        run: |
+          if [ ! -x "$(command -v jq)" ]; then
+            apt update -qy
+            apt install jq -qy
+          fi
+          TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
+          HAS_TESTS=$(echo $TARGET_TYPES | grep -q "test" && echo true || echo false)
+          echo "Package has tests: $HAS_TESTS"
+          echo "RUN_TESTS=$HAS_TESTS" >> $GITHUB_ENV
+
       - name: Build
         run: |
           swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
 
       - name: Test
+        if: env.RUN_TESTS == 'true'
         run: |
           swift build -c ${{ matrix.build_config }} --build-tests --experimental-swift-sdk ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} --static-swift-stdlib
           wasmtime --dir . .build/${{ matrix.build_config }}/shared-actionsPackageTests.wasm
