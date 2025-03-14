@@ -38,12 +38,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
-      - name: Cache APT
-        uses: awalsh128/cache-apt-pkgs-action@v1.4.3
-        with:
-          packages: jq
-          execute_install_scripts: true
-
       - name: Prepare
         run: |
           if [ ! -x "$(command -v jq)" ]; then
