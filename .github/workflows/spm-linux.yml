@@ -41,8 +41,9 @@ jobs:
       - name: Cache APT
         uses: awalsh128/cache-apt-pkgs-action@v1.4.3
         with:
-            packages: jq
-            version: 1.7.1
+          packages: jq
+          version: 1.7.1
+          execute_install_scripts: true
 
       - name: Prepare
         run: |
