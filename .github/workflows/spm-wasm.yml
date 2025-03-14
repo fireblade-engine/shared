@@ -15,7 +15,7 @@ jobs:
           - "6.0.3"
         build_config:
           - debug
-          # - release
+          - release
 
     steps:
       - uses: actions/checkout@v4
@@ -49,14 +49,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
-      - name: Verify SDK
-        run: |
-          swift sdk list
-          swift sdk configure --show-configuration ${{ steps.setup-swiftwasm.outputs.swift-sdk-id }} wasm32-unknown-wasi
-
       - name: Build
         run: |
-          swift build -c ${{ matrix.build_config }} --experimental-swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
 
       - name: Test
         run: |
@@ -65,7 +60,7 @@ jobs:
 
       - name: Run
         run: |
-          swift build -c ${{ matrix.build_config }} --experimental-swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
+          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib --product shared-actions
           wasmtime .build/${{ matrix.build_config }}/shared-actions.wasm
 
       - name: Upload failure artifacts
