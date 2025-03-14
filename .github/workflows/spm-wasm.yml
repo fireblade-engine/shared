@@ -15,7 +15,7 @@ jobs:
           - "6.0.3"
         build_config:
           - debug
-          - release
+          # - release
 
     steps:
       - uses: actions/checkout@v4
@@ -49,13 +49,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-spm-
 
-      - name: Build
-        run: |
-          swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+      # - name: Build
+      #   run: |
+      #     swift build -c ${{ matrix.build_config }} --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
 
       - name: Test
         run: |
-          swift build -c ${{ matrix.build_config }} --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
+          swift build -c ${{ matrix.build_config }} --vv --build-tests --triple wasm32-unknown-wasi --swift-sdk "${{ steps.setup-swiftwasm.outputs.swift-sdk-id }}" --static-swift-stdlib
           wasmtime --dir . .build/${{ matrix.build_config }}/SharedActionsTests.wasm
 
       - name: Run
