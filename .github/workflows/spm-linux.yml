@@ -41,7 +41,6 @@ jobs:
       - name: Prepare
         run: |
           if [ ! -x "$(command -v jq)" ]; then
-            apt update
             apt install jq -y
           fi
           TARGET_TYPES=$(swift package describe --type json | jq '.targets[].type')
