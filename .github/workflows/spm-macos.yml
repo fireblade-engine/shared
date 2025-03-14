@@ -56,10 +56,6 @@ jobs:
         run: |
           swift test -c ${{ matrix.build_config }}
 
-      - name: Run
-        run: |
-          swift run -c ${{ matrix.build_config }} shared-actions
-
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
