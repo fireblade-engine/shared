@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       target_platform:
-        description: 'Target platform - can be iOS, tvOS'
+        description: "Target platform - can be iOS, tvOS"
         required: true
         type: string
 
@@ -55,7 +55,8 @@ jobs:
           echo "SIMULATOR_UDID=$SIMULATOR_UDID" >> $GITHUB_ENV
 
       - name: Build ${{ matrix.build_config }} for testing on ${{ inputs.target_platform }} Simulator
-        run: | # https://developer.apple.com/documentation/xcode/build-settings-reference#Enable-Testability
+        run:
+          | # https://developer.apple.com/documentation/xcode/build-settings-reference#Enable-Testability
           xcodebuild build-for-testing -scheme "shared-actions-Package" -configuration ${{ matrix.build_config }} -destination "platform=${{ inputs.target_platform }} Simulator,OS=latest,id=$SIMULATOR_UDID" ENABLE_TESTABILITY=YES
 
       - name: Test ${{ matrix.build_config }} on ${{ inputs.target_platform }} Simulator
