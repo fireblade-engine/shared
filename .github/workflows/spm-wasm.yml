@@ -5,7 +5,7 @@ on:
 
 jobs:
   SPM-Wasm:
-    name: SPM Wasm
+    name: SPM Wasm Swift ${{ matrix.swift_version }} [${{ matrix.build_config }}]
     timeout-minutes: 30
     runs-on: ubuntu-latest
     strategy:
